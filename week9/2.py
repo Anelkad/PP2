@@ -26,15 +26,11 @@ i=349
 pygame.draw.line(screen, BLACK,[0, 250],[700,250],2)
 pygame.draw.line(screen, BLACK,[350, 0],[350,500],2)
 
-for i in range(1,5):
-    pygame.draw.line(screen, BLACK,[int(i*math.pi*30)+350, 0],[int(i*math.pi*30)+350,500])
-for i in range(1,5):
-    pygame.draw.line(screen, BLACK,[-int(i*math.pi*30)+350, 0],[-int(i*math.pi*30)+350,500])
+for i in range(1,11):
+    pygame.draw.line(screen, BLACK,[int((i-4)*math.pi*30)+350, 0],[int((i-4)*math.pi*30)+350,500])
 
-for i in range(1,6):
-    pygame.draw.line(screen, BLACK,[0, 250-i*45],[700,250-i*45])
-for i in range(1,6):
-    pygame.draw.line(screen, BLACK,[0, 250+i*45],[700,250+i*45])
+for i in range(1,12):
+    pygame.draw.line(screen, BLACK,[0, 250+(i-6)*45],[700,250+(i-6)*45])
 
 done = False
 while not done:
