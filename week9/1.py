@@ -31,13 +31,12 @@ while not done:
     for i in range(700):
      x1=x+1
      y1=250-180*math.sin(x1/30)
-     pygame.draw.line(screen, BLUE,[x, y],[x1,y1])
+     if x1%2==0:pygame.draw.line(screen, BLUE,[x, y],[x1,y1])
      x=x1
      y=y1
-    for i in range(700):
      x2=x0+1
      y2=250-180*math.cos(x2/30)
-     pygame.draw.line(screen, RED,[x0, y0],[x2,y2])
+     if x2%3==0: pygame.draw.line(screen, RED,[x0, y0],[x2,y2])
      x0=x2
      y0=y2
     pygame.display.update()

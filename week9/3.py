@@ -64,16 +64,17 @@ while not done:
     for i in range(-349,351):
      x1=x+1
      y1=200-180*math.sin(i/30)
-     pygame.draw.line(rec, RED,[x, y],[x1,y1],2)
+     pygame.draw.aaline(rec, RED,[x, y],[x1,y1])
      x=x1
      y=y1
      x2=x0+1
      y2=200-180*math.cos(i/30)
-     pygame.draw.line(rec, BLUE,[x0, y2],[x2,y2],2)
+     if x2%2==0: pygame.draw.aaline(rec, BLUE,[x0, y0],[x2,y2])
      x0=x2
-     #clock.tick(90)
-    screen.blit(rec,(80,40))
-    pygame.display.update()
+     y0=y2
+     clock.tick(90)
+     screen.blit(rec,(80,40))
+     pygame.display.update()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
