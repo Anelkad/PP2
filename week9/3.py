@@ -40,6 +40,7 @@ for i in range(1,22):
     pygame.draw.line(rec, BLACK,[int((i-8)*math.pi*15)+350, 390],[int((i-8)*math.pi*15)+350,400])
 for i in range(1,22):
     pygame.draw.line(rec, BLACK,[(i-8)*math.pi*15+350+int(math.pi*30)//4, 395],[(i-8)*math.pi*15+350+int(math.pi*30)//4,400])
+    pygame.draw.line(rec, BLACK,[(i-8)*math.pi*15+350+int(math.pi*30)//4, 0],[(i-8)*math.pi*15+350+int(math.pi*30)//4,5])
 
 for i in range(1,12):
     pygame.draw.line(rec, BLACK,[0, 200+(i-6)*45],[700,200+(i-6)*45])
@@ -48,6 +49,7 @@ for i in range(1,24):
     pygame.draw.line(rec, BLACK,[690, 200+(i-12)*45//2],[700,200+(i-12)*45//2])
 for i in range(1,24):
     pygame.draw.line(rec, BLACK,[0, 200+(i-12)*45//2+45//4],[5,200+(i-12)*45//2+45//4])
+    pygame.draw.line(rec, BLACK,[695, 200+(i-12)*45//2+45//4],[700,200+(i-12)*45//2+45//4])
 
 font = pygame.font.SysFont('Calibri', 15, False, True)
 t1=['1.00','0.75','0.5','0.25','0.00','-0.25','-0.5','-0.75','-1.00']
@@ -58,6 +60,16 @@ t2=[' -3π ','-5π/2',' -2π ','-3π/2',' -π  ',' -π/2','  0  ',' π/2 ','  π
 for i in range(13):
     text = font.render(t2[i], True, BLACK)
     screen.blit(text, (125+i*49,450))
+
+s=font.render('sin(x)',True,BLACK)
+screen.blit(s,(20,440))
+pygame.draw.line(screen,RED,[55,448],[80,448])
+
+c=font.render('cos(x)',True,BLACK)
+screen.blit(c,(20,460))
+pygame.draw.line(screen,BLUE,[55,468],[60,468])
+pygame.draw.line(screen,BLUE,[65,468],[70,468])
+pygame.draw.line(screen,BLUE,[75,468],[80,468])
 
 done = False
 while not done:
@@ -72,9 +84,9 @@ while not done:
      if x2%2==0: pygame.draw.aaline(rec, BLUE,[x0, y0],[x2,y2])
      x0=x2
      y0=y2
-     clock.tick(90)
-     screen.blit(rec,(80,40))
-     pygame.display.update()
+     #clock.tick(90)
+    screen.blit(rec,(80,40))
+    pygame.display.update()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
