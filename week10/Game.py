@@ -13,11 +13,11 @@ start = sc_width//5
 screen = pygame.display.set_mode((sc_width,sc_height))
 road_w = sc_width*2//3
 road_h = sc_height
-table = pygame.Surface((80,40))
+table = pygame.Surface((90,45))
 
 
 font = pygame.font.SysFont("Verdana", 60)
-game_over = font.render("Game Over", True, (0,0,0))
+game_over = font.render("Game Over", True, (255,0,0))
 
 score = 0
 score1 = 0 
@@ -30,7 +30,7 @@ class Enemy:
         self.height = height
         self.x = random.randint(start,road_w + start - self.width)
         self.y = 0
-        self.speed = random.randint(18,40)
+        self.speed = random.randint(18+score*5,40+score*5)
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
 
     def draw(self):
@@ -47,11 +47,11 @@ class Enemy:
             score +=1
             self.y = - self.height
             self.x = random.randint(start,road_w + start - self.width)
-            self.speed = random.randint(18,40)
+            self.speed = random.randint(18+score*5,40+score*5)
         elif self.y > sc_height + self.height:
             self.y = - self.height
             self.x = random.randint(start,road_w + start - self.width)
-            self.speed = random.randint(18,40)
+            self.speed = random.randint(18+score*5,40+score*5)
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
        
 
@@ -83,9 +83,10 @@ car = Car()
 evilcar = Enemy()
 
 class Coin():
-    def __init__(self, x=10, y=10,  width=30, height=30, speed=18):
+    def __init__(self, x=10, y=10,  width=30, height=30, speed=18, dx=5):
         self.x = x
         self.y = y
+        self.dx=random.randint(-10,10)
         self.speed = speed
         self.width = width
         self.height = height
@@ -98,7 +99,10 @@ class Coin():
         
     def fall(self):
         global score1
+        self.x+=self.dx
         self.y += self.speed
+        if self.x + self.width > start + road_w or self.x < start: 
+            self.dx*=-1
         if self.hitbox.colliderect(car.hitbox):
             obstacles.remove(self)
             score1 += 1
@@ -129,7 +133,7 @@ while not gameover:
     screen.blit(pygame.transform.scale(
         pygame.image.load('road.png'), (road_w, road_h)),(start,0))
     
-    screen.blit(table,(0,0))
+    screen.blit(table,(5,5))
     table.fill((255,255,255))
     
     car.draw()
@@ -153,9 +157,12 @@ while not gameover:
     live(score)
     if score >= 3:
         gameover = True
-        screen.fill((255,0,0))
-        screen.blit(game_over, (30,250))
-        screen.blit(font.render(f'Score:{score1}', 1, (255, 255, 255)), (40,320))
+        s = pygame.Surface((sc_width,sc_height))
+        s.set_alpha(128)
+        s.fill((0,0,0))
+        screen.blit(s, (0,0))
+        screen.blit(game_over, (sc_width//4,sc_height/2-70))
+        screen.blit(font.render(f'Score:{score1}', 1, (255, 255, 255)), (sc_width/2,sc_height/2))
         pygame.display.update()
         time.sleep(2)
     
