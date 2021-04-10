@@ -30,13 +30,16 @@ class Enemy:
         self.height = height
         self.x = random.randint(start,road_w + start - self.width)
         self.y = 0
-        self.speed = random.randint(18+score*5,40+score*5)
+        self.speed = random.randint(18+score1//5,40+score1//5*(score+1))
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
 
     def draw(self):
         screen.blit(pygame.transform.scale(
             pygame.image.load('Enemy.png'), (self.width, self.height)), (self.x, self.y))
-        
+        if self.hitbox.colliderect(car.hitbox):
+            screen.blit(pygame.transform.scale(
+                pygame.image.load('bang.png'), (self.width*2, self.height)), (self.x-self.width, self.y))
+
     def fall(self):
         global score
         self.y += self.speed
@@ -47,11 +50,11 @@ class Enemy:
             score +=1
             self.y = - self.height
             self.x = random.randint(start,road_w + start - self.width)
-            self.speed = random.randint(18+score*5,40+score*5)
+            self.speed = random.randint(18+score1//5,40+score1//5*(score+1))
         elif self.y > sc_height + self.height:
             self.y = - self.height
             self.x = random.randint(start,road_w + start - self.width)
-            self.speed = random.randint(18+score*5,40+score*5)
+            self.speed = random.randint(18+score1//5,40+score1//5*(score+1))
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
        
 
@@ -96,7 +99,9 @@ class Coin():
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
         screen.blit(pygame.transform.scale(
             pygame.image.load('coin.png'), (self.width, self.height)), (self.x, self.y))
-        
+        if self.hitbox.colliderect(car.hitbox):
+            screen.blit(pygame.transform.scale(
+                pygame.image.load('star.png'), (self.width, self.height)), (self.x, self.y))
     def fall(self):
         global score1
         self.x+=self.dx
