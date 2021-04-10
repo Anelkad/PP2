@@ -109,6 +109,8 @@ class Coin():
         if self.x + self.width > start + road_w or self.x < start: 
             self.dx*=-1
         if self.hitbox.colliderect(car.hitbox):
+            pygame.mixer.music.load('bonus.wav')
+            pygame.mixer.music.play(1)
             obstacles.remove(self)
             score1 += 1
         elif self.y > sc_height:
@@ -169,7 +171,7 @@ while not gameover:
         screen.blit(game_over, (sc_width//4,sc_height/2-70))
         screen.blit(font.render(f'Score:{score1}', 1, (255, 255, 255)), (sc_width/2,sc_height/2))
         pygame.display.update()
-        time.sleep(2)
+        time.sleep(5)
     
     clock.tick(60)
     pygame.display.update()
