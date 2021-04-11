@@ -34,7 +34,8 @@ class rrect():
         self.x = start +road_w//2 - self.width/2
 
     def draw(self):
-        pygame.draw.rect(screen,(255,255,255),pygame.Rect(self.x,self.y,self.width,self.height))
+        pygame.draw.rect(screen,(255,255,255),pygame.Rect(self.x-55,self.y,self.width,self.height))
+        pygame.draw.rect(screen,(255,255,255),pygame.Rect(self.x+55,self.y,self.width,self.height))
 
     def fall(self):
         self.y+=self.speed
