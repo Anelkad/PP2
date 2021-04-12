@@ -6,7 +6,7 @@ pygame.init()
 clock = pygame.time.Clock()
 pygame.display.set_caption("Game")
 
-#screen
+#создание экран
 sc_height = 600
 sc_width = 550
 start = sc_width//5
@@ -15,16 +15,20 @@ road_w = sc_width*2//3
 road_h = sc_height
 table = pygame.Surface((95,60))
 
+#заготовка шрифтов
+fonttable = pygame.font.SysFont('ComicSans', 30)
+fontgg = pygame.font.SysFont("Verdana", 60)
+font = pygame.font.SysFont('ComicSans', 40)
 
-font = pygame.font.SysFont("Verdana", 60)
-game_over = font.render("Game Over", True, (255,0,0))
-
+#глобальные значения для счета
+hit = 0
 score = 0
-score1 = 0
 level = 1
 case = 0
 pygame.display.set_caption("Game")
+enemies=['enemy1.png','enemy2.png','enemy3.png']
 
+#линии на дороге (спешл класс)
 class rrect():
     def __init__(self, y = 0, width=30 , height = 100, speed = 18):
         self.width = width
@@ -48,33 +52,35 @@ class Enemy:
         self.height = height
         self.x = random.randint(start,road_w + start - self.width)
         self.y = 0
-        self.speed = random.randint(18+score1//5,40+score1//5*(case))
+        self.speed = random.randint(18+score//5,40+score//10*(case))
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
 
     def draw(self):
+        global level
         screen.blit(pygame.transform.scale(
-            pygame.image.load('Enemy.png'), (self.width, self.height)), (self.x, self.y))
+            pygame.image.load(enemies[level%3]), (self.width, self.height)), (self.x, self.y))
         if self.hitbox.colliderect(car.hitbox):
             screen.blit(pygame.transform.scale(
                 pygame.image.load('bang.png'), (self.width*2, self.height)), (self.x-self.width, self.y))
 
     def fall(self):
         global level
-        global score
+        global hit
+        global case
         self.y += self.speed
         if self.hitbox.colliderect(car.hitbox):
             pygame.mixer.music.load('crash.wav')
             pygame.mixer.music.play(1)
             time.sleep(1)
-            score +=1
+            hit +=1
             self.y = - self.height
             self.x = random.randint(start,road_w + start - self.width)
-            self.speed = random.randint(18+score1//5,40+score1//5*(case))
+            self.speed = random.randint(18+score//5,40+score//10*(case))
         elif self.y > sc_height + self.height:
             level +=1
             self.y = - self.height
             self.x = random.randint(start,road_w + start - self.width)
-            self.speed = random.randint(18+score1//5,40+score1//5*(case))
+            self.speed = random.randint(18+score//5,40+score//10*(case))
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
        
 
@@ -102,6 +108,7 @@ class Car:
                 self.x-=self.speed
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
 
+#заготовка объектов
 car = Car()
 evilcar = Enemy()
 obstacles=[]
@@ -126,8 +133,9 @@ class Coin():
         if self.hitbox.colliderect(car.hitbox):
             screen.blit(pygame.transform.scale(
                 pygame.image.load('star.png'), (self.width, self.height)), (self.x, self.y))
+    
     def fall(self):
-        global score1
+        global score
         self.x+=self.dx
         self.y += self.speed
         if self.x + self.width > start + road_w or self.x < start: 
@@ -136,35 +144,46 @@ class Coin():
             pygame.mixer.music.load('bonus.wav')
             pygame.mixer.music.play(1)
             obstacles.remove(self)
-            score1 += 1
+            score += 1
         elif self.y > sc_height:
             obstacles.remove(self)
 
-
+#рандом создание монет 
 def spawner():
-    if len(obstacles) < 3:
+    if len(obstacles) < 5:
         coin = Coin(random.randrange(start,road_w + start - 30,20), random.randrange(-110, -10, 10))
         obstacles.append(coin)
 
-def live(score):
-    for i in range(3-score):
+#показ количества жизней
+def live(hit):
+    for i in range(3-hit):
         table.blit(pygame.transform.scale(
             pygame.image.load('heart.png'), (20, 20)), (21*i, 39))
 
+#решетка для фона
+def cc(w,h):
+    color=[(0,0,0),(255,255,255)]
+    for i in range(w//15+1):
+        for j in range(h//15+1):
+            pygame.draw.rect(screen,color[(i+j)%2],pygame.Rect(i*15,j*15,15,15))
+
 
 gameover = False
-
 pygame.mixer.Sound("background.wav").play(-1)
 
 while not gameover:
     spawner()
-    screen.blit(pygame.transform.scale(
-        pygame.image.load('flower.png'), (sc_width, sc_height)),(0,0))
-    pygame.draw.rect(screen,(156,148,148),pygame.Rect(start,0,road_w,road_h))
+    cc(sc_width,sc_height)
+    #дорога и граница желтая
+    pygame.draw.rect(screen,(253,255,168),pygame.Rect(start-10,0,10,road_h))
+    pygame.draw.rect(screen,(253,255,168),pygame.Rect(start+road_w,0,10,road_h))
+    pygame.draw.rect(screen,(192,192,192),pygame.Rect(start,0,road_w,road_h))
     
+    #таблица для очков
     screen.blit(table,(5,5))
     table.fill((255,255,255))
     
+    #линии дороги движутся
     for r in roadrect:
         r.draw()
         r.fall()
@@ -179,39 +198,37 @@ while not gameover:
         obs.draw()
         obs.fall()
     
-    font = pygame.font.SysFont('ComicSans', 30)
-    text = font.render(f'Score:{score1}', 1, (0, 0, 0))
-    table.blit(text, (0, 0))
-    text1 = font.render(f'Level:{case}', 1, (0, 0, 0))
-    table.blit(text1, (0, 20))
-    
+    #обновление таблицы очков
+    scoretext = fonttable.render("Score:"+str(score), 1, (0, 0, 0))
+    table.blit(scoretext, (0, 0))
+    leveltext = fonttable.render("Level:"+str(case), 1, (0, 0, 0))
+    table.blit(leveltext, (0, 20))
+    live(hit)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             gameover = True
-
-    live(score)
-
+    #обновление уровня (каждые 7 врагов - новый уровень)
     if level//7 == case :
         case+=1
         s = pygame.Surface((sc_width,sc_height))
         s.set_alpha(128)
         s.fill((0,0,0))
         screen.blit(s, (0,0))
-        font = pygame.font.SysFont('ComicSans', 40)
-        screen.blit(font.render(f'Level:{case}', 1, (255, 255, 255)), (sc_width/2-40,sc_height/2))
+        screen.blit(font.render("LEVEL "+str(case), 1, (255, 255, 255)), (sc_width/2-40,sc_height/2))
         pygame.display.update()
         time.sleep(2)
-
-    if score >= 3:
+    #если кончились жизни - конец игры
+    if hit == 3:
         gameover = True
         s = pygame.Surface((sc_width,sc_height))
         s.set_alpha(128)
         s.fill((0,0,0))
         screen.blit(s, (0,0))
-        screen.blit(game_over, (sc_width//4,sc_height/2-70))
-        screen.blit(font.render(f'Score:{score1}', 1, (255, 255, 255)), (sc_width/2,sc_height/2))
+        screen.blit(fontgg.render("Game Over", True, (255,0,0)), (sc_width//4,sc_height/2-70))
+        screen.blit(font.render("Score : "+str(score), 1, (255, 255, 255)), (sc_width/2-30,sc_height/2))
         pygame.display.update()
         time.sleep(5)
     
-    clock.tick(60)
+    clock.tick(80)
     pygame.display.update()
