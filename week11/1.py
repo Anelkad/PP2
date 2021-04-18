@@ -8,19 +8,18 @@ pygame.init()
 
 score = 0
 level = 1
-#pickle_out = open("f.pickle","rb")
-#ex = pickle.load(pickle_out)
-#score = ex["score"]
-#level = ex["level"]
 
 clock = pygame.time.Clock()
 sc_width = 600
 sc_height = 400
 sc = pygame.display.set_mode((sc_width,sc_height))
+table = pygame.Surface((90,30))
+FPS = 10
 
 pygame.display.set_caption("Snake game")
 
 gameover = False
+prev = False
 font = pygame.font.SysFont('ComicSans', 30)
 
 class Circle():
@@ -108,12 +107,39 @@ class Fruit():
 f = Fruit()
 
 while not gameover:
+    while not prev:
+        s = pygame.Surface((sc_width,sc_height))
+        s.set_alpha(128)
+        s.fill((0,0,200))
+        sc.blit(s, (0,0))
+        sc.blit(font.render("CONTINUE GAME?", 1, (255, 0, 0)), (sc_width//3,sc_height/2))
+        sc.blit(font.render("y-Yes / n-No ", 1, (0, 0, 0)), (sc_width//3,sc_height/2+50))
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                prev=True
+                pygame.quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_y:
+                    pickle_out = open("f.pickle","rb")
+                    ex = pickle.load(pickle_out)
+                    score = ex["score"]
+                    level = ex["level"]
+                    FPS = ex["fps"]
+                    tail = [Circle(head.x,head.y) for i in range(ex["len"])]
+                    prev=True
+                if event.key ==pygame.K_n:
+                    prev=True
+
     sc.fill((0,0,0))
     create_map(level)
-    sc.blit(font.render("score "+str(score), 1, (255, 255, 255)), (sc_width*3//4,0))
+    sc.blit(table,(sc_width-95,5))
+    table.fill((255,255,255))
+    table.blit(font.render("score "+str(score), 1, (0, 0, 0)), (0,0))
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             gameover = True
+            pygame.quit()
             
     head.move()
     if head.y-5<0 or head.y+5>sc_height or head.x-5<0 or head.x+5>sc_width:
@@ -134,22 +160,36 @@ while not gameover:
     f.draw()
     if head.hitbox.colliderect(f.hitbox):
         score+=1
+        pygame.mixer.music.load('bonus.wav')
+        pygame.mixer.music.play(1)
         f = Fruit()
         tail.append(Circle(head.x,head.y))
 
     if score//5 ==level:
+        FPS+=1
         level+=1
         walls = []
         tail = []
-        s = pygame.Surface((sc_width,sc_height))
-        s.set_alpha(128)
-        s.fill((0,0,200))
-        sc.blit(s, (0,0))
-        sc.blit(font.render("LEVEL "+str(level), 1, (255, 255, 255)), (sc_width/2-40,sc_height/2))
-        pygame.display.update()
-        time.sleep(2)
+        head = Snakehead()
+        if level >=6:
+            s = pygame.Surface((sc_width,sc_height))
+            s.set_alpha(128)
+            s.fill((0,0,200))
+            sc.blit(s, (0,0))
+            sc.blit(font.render("WINNER!", 1, (255, 255, 255)), (sc_width/2-40,sc_height/2))
+            pygame.display.update()
+            time.sleep(2)
+            pygame.quit()
+        else:
+            s = pygame.Surface((sc_width,sc_height))
+            s.set_alpha(128)
+            s.fill((0,0,200))
+            sc.blit(s, (0,0))
+            sc.blit(font.render("LEVEL "+str(level), 1, (255, 255, 255)), (sc_width/2-40,sc_height/2))
+            pygame.display.update()
+            time.sleep(2)
     
-    clock.tick(10)
+    clock.tick(FPS)
     pygame.display.update()
 
 if gameover:
@@ -157,15 +197,19 @@ if gameover:
     s.set_alpha(128)
     s.fill((200,0,0))
     sc.blit(s, (0,0))
-    sc.blit(font.render("Game Over", True, (255,0,0)), (sc_width//4,sc_height/2-70))
+    sc.blit(font.render("Game Over", True, (0,0,0)), (sc_width//4,sc_height/2-70))
     sc.blit(font.render("Score : "+str(score), 1, (255, 255, 255)), (sc_width/2-30,sc_height/2))
     pygame.display.update()
     time.sleep(3)
 
-dic = {
+if level<6:
+    dic = {
     "score" : score,
-    "level" : level
-}
-pickle_out = open("f.pickle","wb")
-pickle.dump(dic,pickle_out)
-pickle_out.close()
+    "level" : level,
+    "fps" : FPS,
+    "len" : len(tail)
+    }
+    pickle_out = open("f.pickle","wb")
+    pickle.dump(dic,pickle_out)
+    pickle_out.close()
+

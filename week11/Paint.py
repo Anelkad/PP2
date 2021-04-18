@@ -58,6 +58,7 @@ def drawCicrle(screen,start,end,color):
 
 def main():
     screen = pygame.display.set_mode((800, 600))
+    pygame.display.set_caption("Paint game")
     mode = 'random'
     draw_on = False
     last_pos = (0, 0)
@@ -72,7 +73,9 @@ def main():
     colors = {
         'red': (255, 0, 0),
         'blue': (0, 0, 255),
-        'green': (0, 255, 0)
+        'green': (0, 255, 0),
+        'yellow': (255,255,0),
+        'pink': (255,0,255)
     }
 
     while True:
@@ -89,6 +92,12 @@ def main():
                     mode = 'blue'
                 if event.key == pygame.K_g:
                     mode = 'green'
+                if event.key == pygame.K_p:
+                    mode = 'pink'
+                if event.key == pygame.K_y:
+                    mode = 'yellow'
+                if event.key == pygame.K_r:
+                    mode = 'random'
                 if event.key == pygame.K_UP:
                     radius += dr
                 if event.key == pygame.K_DOWN:
