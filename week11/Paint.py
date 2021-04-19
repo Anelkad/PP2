@@ -55,10 +55,15 @@ def drawCicrle(screen,start,end,color):
         a=y1+d//2
     pygame.draw.circle(screen,color,(min(x1,x2)+d//2,a),d//2)
 
+sc_width = 800
+sc_height = 600
 
 def main():
-    screen = pygame.display.set_mode((800, 600))
+    screen = pygame.display.set_mode((sc_width, sc_height))
     pygame.display.set_caption("Paint game")
+    s = pygame.Surface((sc_width,sc_height))
+    s.fill((0,0,0))
+    screen.blit(s, (0,0))
     mode = 'random'
     draw_on = False
     last_pos = (0, 0)
@@ -101,46 +106,44 @@ def main():
                 if event.key == pygame.K_UP:
                     radius += dr
                 if event.key == pygame.K_DOWN:
-                    if radius>0: radius -= dr
+                    if radius>dr: radius -= dr
                 if event.key == pygame.K_n:
                     radius = 1
                     dr = 5
-                    pygame.image.save(screen,'image.jpg')
                     currentTool = (currentTool + 1) % toolCount
                     if currentTool==3:
                         radius = 10
                         dr = 10
                 if event.key == pygame.K_s:
-                    pygame.image.save(screen,'image.jpg')
+                    pygame.image.save(s,'image.jpg')
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if mode == 'random':
                     color = (random.randrange(256), random.randrange(256), random.randrange(256))
                 else:
                     color = colors[mode]
-                if currentTool == 0: pygame.draw.circle(screen, color, event.pos, radius)
-                if currentTool == 3: pygame.draw.rect(screen,(0,0,0),(event.pos[0],event.pos[1],radius,radius)) 
+                if currentTool == 0: pygame.draw.circle(s, color, event.pos, radius)
+                if currentTool == 3: pygame.draw.rect(s,(0,0,0),(event.pos[0],event.pos[1],radius,radius)) 
                 first_pos = event.pos
                 draw_on = True
             if event.type == pygame.MOUSEBUTTONUP:
-                pygame.image.save(screen,'image.jpg')
                 last_pos = event.pos
                 if currentTool == 1:
-                    pygame.draw.rect(screen,color,(min(first_pos[0],last_pos[0]),
+                    pygame.draw.rect(s,color,(min(first_pos[0],last_pos[0]),
                     min(first_pos[1],last_pos[1]),abs(first_pos[0]-last_pos[0]),abs(first_pos[1]-last_pos[1])))
                 if currentTool == 2:
-                    drawCicrle(screen,first_pos,last_pos,color)
+                    drawCicrle(s,first_pos,last_pos,color)
+                screen.blit(s, (0,0))
                 draw_on = False
             if event.type == pygame.MOUSEMOTION:
+                screen.blit(s, (0,0))
                 if draw_on:
                     if currentTool == 1:
-                        screen.blit(pygame.image.load('image.jpg'),(0,0))
                         pygame.draw.rect(screen,color,(min(first_pos[0],last_pos[0]),
                             min(first_pos[1],last_pos[1]),abs(first_pos[0]-last_pos[0]),abs(first_pos[1]-last_pos[1])))
                     if currentTool == 2:
-                        screen.blit(pygame.image.load('image.jpg'),(0,0))
                         drawCicrle(screen,first_pos,last_pos,color)
                     if currentTool==0 or currentTool==3:
-                        drawLine(screen, last_pos, event.pos, radius, color,currentTool)
+                        drawLine(s, last_pos, event.pos, radius, color,currentTool)
                 last_pos = event.pos
                 pygame.display.flip()
         pygame.display.flip()
