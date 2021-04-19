@@ -14,9 +14,16 @@ sc_height = 400
 sc = pygame.display.set_mode((sc_width,sc_height))
 table = pygame.Surface((90,30))#для очков поле
 
+#решетка для фона
+def cc():
+    color=[(204,204,255),(204,229,255)]
+    for i in range(sc_width//10):
+        for j in range(sc_height//10):
+            pygame.draw.rect(sc,color[(i+j)%2],pygame.Rect(i*10,j*10,10,10))
 
 pygame.display.set_caption("Snake game")
 font = pygame.font.SysFont('ComicSans', 30)
+fontgg = pygame.font.SysFont("Verdana", 60)
 
 #класс для элементов хвоста
 class Circle():
@@ -129,6 +136,9 @@ class evilSnake(Snakehead):
         self.y = sc_height-15
         self.dx = 0
 
+    def draw(self):
+        pygame.draw.circle(sc,(94,43,24),(self.x,self.y),self.r)
+
     def move(self):
         if len(eviltail)>0:
             for i in range(len(eviltail)-1):
@@ -181,10 +191,11 @@ def supergame():
     gameclose = False
     while not gameclose:
         sc.fill((0,0,0))
+        cc()
         sc.blit(table,(sc_width-95,5))
         table.fill((255,255,255))
         table.blit(font.render("score1 "+str(score1), 1, (0, 0, 0)), (0,0))
-        table.blit(font.render("score2 "+str(score2), 1, (0, 0, 0)), (0,14))
+        table.blit(font.render("score2 "+str(score2), 1, (0, 0, 0)), (0,15))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 gameclose = True
@@ -244,7 +255,7 @@ def supergame():
         if gameover1: text = font.render("2nd Winner!", True, (0,0,0))
         else: text = font.render("1st Winner!", True, (0,0,0))
         sc.blit(text, (sc_width//4,sc_height/2-70))
-        sc.blit(font.render("press F to play again", 1, (255, 255, 255)), (sc_width/2-30,sc_height/2+40))
+        sc.blit(font.render("press F to play again", 1, (255, 255, 255)), (sc_width/2,sc_height/2-70))
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_f:
@@ -272,7 +283,7 @@ def main():
             s.fill((0,0,200))
             sc.blit(s, (0,0))
             sc.blit(font.render("CONTINUE GAME?", 1, (255, 0, 0)), (sc_width//3,sc_height/2))
-            sc.blit(font.render("Yes: press y / No: press n", 1, (0, 0, 0)), (sc_width//3,sc_height/2+50))
+            sc.blit(font.render("Yes: press y / No: press n", 1, (255, 255, 255)), (sc_width//3,sc_height/2+30))
             pygame.display.update()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -292,6 +303,7 @@ def main():
                         prev=True
 
         sc.fill((0,0,0))
+        cc()
         create_map(level)
         sc.blit(table,(sc_width-95,5))
         table.fill((255,255,255))
@@ -363,9 +375,9 @@ def main():
         sc.blit(s, (0,0))
         pygame.mixer.music.load('gameover.wav')
         pygame.mixer.music.play(1)
-        sc.blit(font.render("GAME OVER", True, (0,0,0)), (sc_width//4,sc_height/2-70))
+        sc.blit(fontgg.render("GAME OVER", True, (255,0,0)), (sc_width//4,sc_height/2-70))
         sc.blit(font.render("Score : "+str(score), 1, (255, 255, 255)), (sc_width/2-30,sc_height/2))
-        sc.blit(font.render("press F to play again", 1, (255, 255, 255)), (sc_width/2-30,sc_height/2+40))
+        sc.blit(font.render("press F to play again", 1, (255, 255, 255)), (sc_width/2-30,sc_height/2+30))
         pygame.display.update()
         time.sleep(7)
         if level<6:
@@ -394,7 +406,7 @@ while not run:
     s.fill((0,0,200))
     sc.blit(s, (0,0))
     sc.blit(font.render("Game for 2?", 1, (255, 0, 0)), (sc_width//3,sc_height/2))
-    sc.blit(font.render("Yes: press y / No: press n", 1, (0, 0, 0)), (sc_width//3,sc_height/2+50))
+    sc.blit(font.render("Yes: press y / No: press n", 1, (255, 255, 255)), (sc_width//3,sc_height/2+30))
     pygame.display.update()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

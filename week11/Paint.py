@@ -8,7 +8,7 @@ import pygame, random
 # Ax + By + C = 0
 # (x - x1) / (x2 - x1) = (y - y1) / (y2 - y1)
 
-
+#рисовка ровной линии
 def drawLine(screen, start, end, width, color,tool):
     x1 = start[0]
     y1 = start[1]
@@ -40,6 +40,7 @@ def drawLine(screen, start, end, width, color,tool):
             if tool==0:pygame.draw.circle(screen, color, (x, y), width)
             if tool==3:pygame.draw.rect(screen,(0,0,0),(x,y,width,width))
 
+#рисовка круга отноосительно куда тянется курсор
 def drawCicrle(screen,start,end,color):
     x1 = start[0]
     y1 = start[1]
@@ -57,11 +58,11 @@ def drawCicrle(screen,start,end,color):
 
 sc_width = 800
 sc_height = 600
+screen = pygame.display.set_mode((sc_width, sc_height))
+pygame.display.set_caption("Paint game")
+s = pygame.Surface((sc_width,sc_height))#плоскость где будет рисунок
 
 def main():
-    screen = pygame.display.set_mode((sc_width, sc_height))
-    pygame.display.set_caption("Paint game")
-    s = pygame.Surface((sc_width,sc_height))
     s.fill((0,0,0))
     screen.blit(s, (0,0))
     mode = 'random'
@@ -72,7 +73,7 @@ def main():
     dr=5
     radius = 1
 
-    currentTool = 0
+    currentTool = 0 # текущий инструмент
     toolCount = 4
 
     colors = {
@@ -116,15 +117,19 @@ def main():
                         dr = 10
                 if event.key == pygame.K_s:
                     pygame.image.save(s,'image.jpg')
+
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if mode == 'random':
                     color = (random.randrange(256), random.randrange(256), random.randrange(256))
                 else:
                     color = colors[mode]
+
                 if currentTool == 0: pygame.draw.circle(s, color, event.pos, radius)
                 if currentTool == 3: pygame.draw.rect(s,(0,0,0),(event.pos[0],event.pos[1],radius,radius)) 
+                
                 first_pos = event.pos
                 draw_on = True
+
             if event.type == pygame.MOUSEBUTTONUP:
                 last_pos = event.pos
                 if currentTool == 1:
@@ -135,7 +140,8 @@ def main():
                 screen.blit(s, (0,0))
                 draw_on = False
             if event.type == pygame.MOUSEMOTION:
-                screen.blit(s, (0,0))
+
+                screen.blit(s, (0,0))# изменение будет рисоватся поверх
                 if draw_on:
                     if currentTool == 1:
                         pygame.draw.rect(screen,color,(min(first_pos[0],last_pos[0]),
@@ -144,6 +150,7 @@ def main():
                         drawCicrle(screen,first_pos,last_pos,color)
                     if currentTool==0 or currentTool==3:
                         drawLine(s, last_pos, event.pos, radius, color,currentTool)
+
                 last_pos = event.pos
                 pygame.display.flip()
         pygame.display.flip()
