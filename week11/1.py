@@ -7,17 +7,18 @@ import os
 pygame.init()
 
 level = 1
-
 clock = pygame.time.Clock()
+#размер экрана
 sc_width = 600
 sc_height = 400
 sc = pygame.display.set_mode((sc_width,sc_height))
-table = pygame.Surface((90,30))
-FPS = 8
+table = pygame.Surface((90,30))#для очков поле
+
 
 pygame.display.set_caption("Snake game")
 font = pygame.font.SysFont('ComicSans', 30)
 
+#класс для элементов хвоста
 class Circle():
     def __init__(self, x = 0, y = 0):
         self.r = 5
@@ -29,6 +30,7 @@ class Circle():
     def draw(self):
         pygame.draw.circle(sc,(100,100,100),(self.x,self.y),self.r)
 
+#класс для стен
 class Wall():
     def __init__(self,x ,y ):
         self.x = x
@@ -42,7 +44,7 @@ class Wall():
 
 tail = []
 walls = []
-
+#функция создания карт
 def create_map(level):
     with open(f'maps/map_{level}.txt', mode='r') as file:
         row_num = 0 
@@ -52,6 +54,7 @@ def create_map(level):
                     walls.append(Wall(block_num*20, row_num*20))
             row_num += 1
 
+#класс для головы змеи
 class Snakehead():
     def __init__(self):
         self.r = 5
@@ -101,13 +104,11 @@ class Snakehead():
         elif self.down:
             self.dx = 0
             self.dy = self.speed
-        
-        
         self.y+=self.dy
         self.x+=self.dx
         self.hitbox = pygame.Rect(self.x-self.r,self.y-self.r,self.r*2,self.r*2)
 
-
+#класс для фрукта
 class Fruit():
     def __init__(self):
         self.r = 5
@@ -118,7 +119,8 @@ class Fruit():
     def draw(self):
         pygame.draw.circle(sc,(200,10,10),(self.x,self.y),self.r)
 
-eviltail = []        
+eviltail = []   
+# класс для второй змеи (другая консоль)     
 class evilSnake(Snakehead):
     def __init__(self):
         Snakehead.__init__(self)
@@ -159,12 +161,11 @@ class evilSnake(Snakehead):
         elif self.down:
             self.dx = 0
             self.dy = self.speed
-        
-        
         self.y+=self.dy
         self.x+=self.dx
         self.hitbox = pygame.Rect(self.x-self.r,self.y-self.r,self.r*2,self.r*2)
 
+#функция игры на двоих
 def supergame():
     head = Snakehead()
     evil = evilSnake()
@@ -232,11 +233,14 @@ def supergame():
             eviltail.append(Circle(evil.x,evil.y))
         clock.tick(8)
         pygame.display.update()
+
     if gameover1 or gameover2:
         s = pygame.Surface((sc_width,sc_height))
         s.set_alpha(128)
         s.fill((200,0,0))
         sc.blit(s, (0,0))
+        pygame.mixer.music.load('gameover.wav')
+        pygame.mixer.music.play(1)
         if gameover1: text = font.render("2nd Winner!", True, (0,0,0))
         else: text = font.render("1st Winner!", True, (0,0,0))
         sc.blit(text, (sc_width//4,sc_height/2-70))
@@ -248,10 +252,12 @@ def supergame():
         pygame.display.update()
         time.sleep(7)
 
-
+#основная игра с уровнями
 def main():
-    global tail, walls, FPS, level
+    global tail, walls, level
+    level = 1
     score = 0
+    FPS = 8
     f = Fruit()
     tail=[]
     head = Snakehead()
@@ -259,6 +265,7 @@ def main():
     gameclose = False
     prev = False
     while not gameclose:
+        #загрузка предыдущей игры в зависимости от выбора
         while not prev:
             s = pygame.Surface((sc_width,sc_height))
             s.set_alpha(128)
@@ -321,6 +328,8 @@ def main():
             tail.append(Circle(head.x,head.y))
 
         if score//10 ==level:
+            pygame.mixer.music.load('level.wav')
+            pygame.mixer.music.play(1)
             FPS+=1
             level+=1
             walls = []
@@ -352,6 +361,8 @@ def main():
         s.set_alpha(128)
         s.fill((200,0,0))
         sc.blit(s, (0,0))
+        pygame.mixer.music.load('gameover.wav')
+        pygame.mixer.music.play(1)
         sc.blit(font.render("GAME OVER", True, (0,0,0)), (sc_width//4,sc_height/2-70))
         sc.blit(font.render("Score : "+str(score), 1, (255, 255, 255)), (sc_width/2-30,sc_height/2))
         sc.blit(font.render("press F to play again", 1, (255, 255, 255)), (sc_width/2-30,sc_height/2+40))
@@ -374,7 +385,8 @@ def main():
                     main()
 
     
-
+pygame.mixer.Sound("background.wav").play(-1)
+#запуск игры в зависимости от выбора
 run = False
 while not run:
     s = pygame.Surface((sc_width,sc_height))
