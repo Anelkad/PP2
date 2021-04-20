@@ -132,12 +132,12 @@ class evilSnake(Snakehead):
     def __init__(self):
         Snakehead.__init__(self)
         self.r = 5
-        self.x = sc_width-15
-        self.y = sc_height-15
+        self.x = 15
+        self.y = 25
         self.dx = 0
 
     def draw(self):
-        pygame.draw.circle(sc,(94,43,24),(self.x,self.y),self.r)
+        pygame.draw.circle(sc,(100,100,100),(self.x,self.y),self.r)
 
     def move(self):
         if len(eviltail)>0:
@@ -255,11 +255,6 @@ def supergame():
         if gameover1: text = font.render("2nd Winner!", True, (0,0,0))
         else: text = font.render("1st Winner!", True, (0,0,0))
         sc.blit(text, (sc_width//4,sc_height/2-70))
-        sc.blit(font.render("press F to play again", 1, (255, 255, 255)), (sc_width/2,sc_height/2-70))
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_f:
-                    supergame()
         pygame.display.update()
         time.sleep(7)
 
@@ -271,6 +266,7 @@ def main():
     FPS = 8
     f = Fruit()
     tail=[]
+    walls=[]
     head = Snakehead()
     gameover = False
     gameclose = False
@@ -377,7 +373,6 @@ def main():
         pygame.mixer.music.play(1)
         sc.blit(fontgg.render("GAME OVER", True, (255,0,0)), (sc_width//4,sc_height/2-70))
         sc.blit(font.render("Score : "+str(score), 1, (255, 255, 255)), (sc_width/2-30,sc_height/2))
-        sc.blit(font.render("press F to play again", 1, (255, 255, 255)), (sc_width/2-30,sc_height/2+30))
         pygame.display.update()
         time.sleep(7)
         if level<6:
@@ -391,10 +386,6 @@ def main():
             pickle_out = open("f.pickle","wb")
             pickle.dump(dic,pickle_out)
             pickle_out.close()
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_f:
-                    main()
 
     
 pygame.mixer.Sound("background.wav").play(-1)
