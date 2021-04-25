@@ -28,16 +28,21 @@ def updating():
     sql = """
     UPDATE students SET id=%s WHERE name=%s
     """
-    name = 'A'
-    new_id = '4'
+    name = input("write name ")
+    new_id = input("write new id for him ")
     cur.execute(sql, (new_id,name))
     print(cur.rowcount)
 
 
 def querying():
-    sql = """
-    SELECT * FROM students WHERE gpa>3.00
-    """
+    print("please write what do you find: id / name / faculty / gpa")
+    t=input()
+    q=input()
+    if t=='gpa':
+        sql = "SELECT * FROM students WHERE gpa"+q
+    else:
+        sql = "SELECT * FROM students WHERE "+t+" = "+"'"+q+"'"
+    
     cur.execute(sql)
 
     row = cur.fetchone()
@@ -46,14 +51,18 @@ def querying():
         print(row)
         row = cur.fetchone()
 
-def deleting(cur):
-    sql = """
-    DELETE FROM students WHERE gpa<2.0
-    """
+def deleting():
+    print("please write what do you delete: id / name / faculty / gpa")
+    t=input()
+    q=input()
+    if t=='gpa':
+        sql = "DELETE FROM students WHERE gpa"+q
+    else:
+        sql = "DELETE FROM students WHERE "+t+" = "+"'"+q+"'"
     cur.execute(sql)
 
     print(cur.rowcount)
 
-querying()
+deleting()
 cur.close()
 conn.commit()
